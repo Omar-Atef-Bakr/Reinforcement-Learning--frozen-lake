@@ -8,7 +8,7 @@ PENALTY = -1
 REWARD = 100
 OBSTACLE_PENALTY = -100
 STUCK_VALUE = -100
-ITERATIONS = 100
+#ITERATIONS = 100
 
 class Solver:
     def __init__(self, board):
@@ -16,6 +16,7 @@ class Solver:
         self.BOARD = [cell for row in board for cell in row]
         print(len(self.BOARD))
         self.size = len(board)
+        self.ITERATIONS = 2*self.size
 
         self.policy = []
         self.value = []
@@ -55,7 +56,7 @@ class Solver:
         new_values = [0] * len(self.BOARD)
 
         # Value iteration loop
-        for _ in range(ITERATIONS):
+        for _ in range(self.ITERATIONS):
             print("Value iteration: ", _, ": ", self.value)
             delta = 0
             for s in range(1, len(self.BOARD)):

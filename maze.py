@@ -88,14 +88,14 @@ class MazeGUI:
     def solve_maze(self):
         print(self.maze_generator.get_maze())
         ai = Solver(self.maze_generator.get_maze())
-        # print(ai.value_iteration())
-        print(ai.policy_iteration())
-        print(ai.policy_representation())
+        print(ai.value_iteration())
+        # print(ai.policy_iteration())
+        # print(ai.policy_representation())
         self.visualize_policy(ai.policy_representation())
 
 
 def draw_arrow(canvas, x, y, direction, cell_size):
-    arrow_length = 20
+    arrow_length = 15
     arrow_width = 1
 
     if direction == 'l':
