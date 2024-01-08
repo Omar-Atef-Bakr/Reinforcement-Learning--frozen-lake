@@ -16,7 +16,7 @@ class Solver:
         self.BOARD = [cell for row in board for cell in row]
         print(len(self.BOARD))
         self.size = len(board)
-        self.ITERATIONS = 2*self.size
+        self.ITERATIONS = int((self.size**2) * (2.5/3))
 
         self.policy = []
         self.value = []
@@ -173,7 +173,9 @@ class Solver:
         self.initialize_policy_and_value_functions()
 
         # Policy iteration loop
-        while True:
+        for i in range(self.ITERATIONS):
+            print(f"Policy Iteration {i}: values={self.value}")
+
             # Policy evaluation
             self.policy_evaluation()
 

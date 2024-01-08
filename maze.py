@@ -3,8 +3,30 @@ import random
 from solver import Solver, STUCK_VALUE
 
 
-MAZE_SIZE = 10
-OBSTACLE_DENSITY = .2
+'''
+longest path for every size:
+2: 2    4    2.666
+3: 6    9   6
+4: 11   16  10.666
+5: 17   25  16.6666
+6: 23   36  24
+7: 34   49  32.66
+
+longest path is always bound by (n**2) * 2/3 where n is the number of rows
+
+therefore setting the maximum number of iterations to 2.5/3 * (n**2) garuntees we find the solution for any puzzle 
+without too many useless iterations in the case of unsolvable cells 
+'''
+
+##############################
+# Settings to adjust
+MAZE_SIZE = 5                  # number of rows in the maze
+OBSTACLE_DENSITY = .2           # possibility of every cell being an obstacle
+USE_VALUE_ITERATION = False     # if True value iteration will be use. if False then policy iteration will be used
+##############################
+
+
+WINDOW_SIZE = 650
 
 
 class MazeGenerator:
@@ -35,7 +57,7 @@ class MazeGUI:
     def __init__(self, root, maze_size, obstacle_density):
         self.root = root
         self.root.title("Maze Generator")
-        self.canvas_size = 400
+        self.canvas_size = WINDOW_SIZE
         self.cell_size = self.canvas_size // maze_size
         self.maze_generator = MazeGenerator(maze_size, obstacle_density)
 
@@ -88,9 +110,9 @@ class MazeGUI:
     def solve_maze(self):
         print(self.maze_generator.get_maze())
         ai = Solver(self.maze_generator.get_maze())
-        print(ai.value_iteration())
-        # print(ai.policy_iteration())
-        # print(ai.policy_representation())
+
+        solution = ai.value_iteration() if USE_VALUE_ITERATION else ai.policy_iteration()
+        print(solution)
         self.visualize_policy(ai.policy_representation())
 
 
@@ -118,6 +140,7 @@ def draw_arrow(canvas, x, y, direction, cell_size):
     elif direction == 's':
         # canvas.create_oval(x - arrow_length, y - arrow_length, x + arrow_length, y + arrow_length, fill='red')
         canvas.create_rectangle(x - cell_size/2, y - cell_size/2, x + cell_size/2, y + cell_size/2, fill='red')
+
 
 if __name__ == "__main__":
     root = tk.Tk()
