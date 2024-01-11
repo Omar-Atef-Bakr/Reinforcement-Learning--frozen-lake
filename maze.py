@@ -20,9 +20,9 @@ without too many useless iterations in the case of unsolvable cells
 
 ##############################
 # Settings to adjust
-MAZE_SIZE = 5                  # number of rows in the maze
-OBSTACLE_DENSITY = .2           # possibility of every cell being an obstacle
-USE_VALUE_ITERATION = False     # if True value iteration will be use. if False then policy iteration will be used
+MAZE_SIZE = 30                  # number of rows in the maze
+OBSTACLE_DENSITY = .5           # possibility of every cell being an obstacle
+USE_VALUE_ITERATION = True     # if True value iteration will be use. if False then policy iteration will be used
 ##############################
 
 

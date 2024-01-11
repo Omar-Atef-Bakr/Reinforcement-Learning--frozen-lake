@@ -134,7 +134,7 @@ class Solver:
         # if next state is blocked return current state
         if self.BOARD[next_state] == 1:
             return s
-        
+
         return next_state
 
     def policy_improvement(self):
@@ -180,32 +180,26 @@ class Solver:
             self.policy_evaluation()
 
             # Policy improvement
-            if not self.policy_improvement():
-                break
+            self.policy_improvement()
 
     def policy_evaluation(self):
         new_values = [0] * len(self.BOARD)
 
         # Policy evaluation loop
-        while True:
-            delta = 0
-            for s in range(1, len(self.BOARD)):
-                # skip obstacles
-                if self.BOARD[s] == 1:
-                    continue
 
-                # old value
-                v = self.value[s]
+        for s in range(1, len(self.BOARD)):
+            # skip obstacles
+            if self.BOARD[s] == 1:
+                continue
 
-                # new value
-                new_values[s] = self.get_q_value(s, self.get_best_action(s))
+            # old value
+            v = self.value[s]
 
-                delta = max(delta, abs(v - new_values[s]))
+            # new value
+            new_values[s] = sum([self.get_q_value(s, a) for a in range(4)]) / 4
 
-            # check for convergence
-            self.value = new_values
-            if delta < 1e-4:
-                break
+        # check for convergence
+        self.value = new_values
 
     def get_best_action(self, s):
         best_action = None
