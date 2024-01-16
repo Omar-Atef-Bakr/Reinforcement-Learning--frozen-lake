@@ -20,6 +20,7 @@ class Solver:
 
         self.policy = []
         self.value = []
+        self.solvable = [False] * self.size**2
 
         # initialize policy and value functions
         self.initialize_policy_and_value_functions()
@@ -56,7 +57,7 @@ class Solver:
         new_values = [0] * len(self.BOARD)
 
         # Value iteration loop
-        for _ in range(self.ITERATIONS):
+        while True:
             print("Value iteration: ", _, ": ", self.value)
             delta = 0
             for s in range(1, len(self.BOARD)):
@@ -74,12 +75,21 @@ class Solver:
                 else:
                     new_values[s] = max(self.get_q_value(s, a) for a in actions)
 
-                delta = max(delta, abs(v - new_values[s]))
+                # check for solvability
+                if not self.solvable[s]:
+                    for a in range(4):
+                        ns = self.get_next_state(s, a)
+                        if ns == 0 or self.solvable[ns]:
+                            self.solvable[s] = True
+
+                if self.solvable[s]:
+                    delta = max(delta, abs(v - new_values[s]))
 
             # check for convergence
             self.value = new_values
             if delta < 1e-4:
                 break
+            delta = 0
 
         # Policy improvement
         self.policy_improvement()
@@ -155,7 +165,7 @@ class Solver:
             self.policy[s] = new_policy
 
             # check if policy is stable
-            if old_policy != new_policy:
+            if self.solvable[s] and old_policy != new_policy:
                 policy_stable = False
 
         # self.policy[0] = None
@@ -164,7 +174,8 @@ class Solver:
     def get_best_policy(self, s):
         best_values = [self.get_q_value(s, a) for a in range(4)]
 
-        policy = [-val/sum(best_values) for val in best_values]
+        # policy = [-val/sum(best_values) for val in best_values]
+        policy = [1 if val == max(best_values) else 0 for val in best_values]
         return policy
 
     # Policy Iteration Algorithm
@@ -180,7 +191,8 @@ class Solver:
             self.policy_evaluation()
 
             # Policy improvement
-            self.policy_improvement()
+            if self.policy_improvement():
+                break
 
     def policy_evaluation(self):
         new_values = [0] * len(self.BOARD)
@@ -194,6 +206,12 @@ class Solver:
 
             # old value
             v = self.value[s]
+
+            if not self.solvable[s]:
+                for a in range(4):
+                    ns = self.get_next_state(s, a)
+                    if ns == 0 or self.solvable[ns]:
+                        self.solvable[s] = True
 
             # new value
             new_values[s] = sum([self.get_q_value(s, a) for a in range(4)]) / 4
@@ -223,7 +241,7 @@ class Solver:
         }
 
         for i in range(1, len(self.policy)):
-            if self.value[i] <= STUCK_VALUE:
+            if not self.solvable[i]:
                 policy.append('S')
                 continue
 
