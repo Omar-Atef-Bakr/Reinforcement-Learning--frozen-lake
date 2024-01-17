@@ -52,14 +52,18 @@ class MazeGenerator:
     def get_maze(self):
         return self.maze
 
-
 class MazeGUI:
-    def __init__(self, root, maze_size, obstacle_density):
+    def __init__(self, root, maze_size, obstacle_density, use_value_iteration):
         self.root = root
         self.root.title("Maze Generator")
-        self.canvas_size = WINDOW_SIZE
-        self.cell_size = self.canvas_size // maze_size
-        self.maze_generator = MazeGenerator(maze_size, obstacle_density)
+        self.maze_size = maze_size
+        self.obstacle_density = obstacle_density
+        self.use_value_iteration = use_value_iteration
+
+        self.maze_generator = MazeGenerator(self.maze_size, self.obstacle_density)
+
+        self.cell_size = WINDOW_SIZE // self.maze_size
+        self.canvas_size = self.cell_size * self.maze_size
 
         self.canvas = tk.Canvas(root, width=self.canvas_size, height=self.canvas_size, bg="white")
         self.canvas.pack()
@@ -67,16 +71,47 @@ class MazeGUI:
         self.generate_button = tk.Button(root, text="Generate Maze", command=self.generate_maze)
         self.generate_button.pack()
 
+        self.maze_size_label = tk.Label(root, text="Maze Size:")
+        self.maze_size_entry = tk.Entry(root)
+        self.maze_size_entry.insert(0, str(self.maze_size))
+        self.maze_size_label.pack()
+        self.maze_size_entry.pack()
+
+        self.obstacle_density_label = tk.Label(root, text="Obstacle Density:")
+        self.obstacle_density_entry = tk.Entry(root)
+        self.obstacle_density_entry.insert(0, str(self.obstacle_density))
+        self.obstacle_density_label.pack()
+        self.obstacle_density_entry.pack()
+
+        self.use_value_iteration_button = tk.Button(root, text="Toggle Value Iteration",
+                                                    command=self.toggle_value_iteration)
+        self.use_value_iteration_button.pack()
+
         self.generate_maze()
 
     def generate_maze(self):
+        self.maze_size = int(self.maze_size_entry.get())
+        self.obstacle_density = float(self.obstacle_density_entry.get())
+
+        self.maze_generator = MazeGenerator(self.maze_size, self.obstacle_density)
         self.maze_generator.generate_maze()
+
+        self.cell_size = WINDOW_SIZE // self.maze_size
+        self.canvas_size = self.cell_size * self.maze_size
+
+        self.canvas.config(width=self.canvas_size, height=self.canvas_size)
+
         maze = self.maze_generator.get_maze()
         self.draw_maze(maze)
         self.canvas.update()
-        print("Maze: ", maze)
         self.solve_maze()
 
+    def toggle_value_iteration(self):
+        self.use_value_iteration = not self.use_value_iteration
+        self.use_value_iteration_button.config(text="Toggle Value Iteration (Currently {})".format(
+            "On" if self.use_value_iteration else "Off"))
+
+        
     def draw_maze(self, maze):
         self.canvas.delete("all")
         for row in range(len(maze)):
@@ -88,6 +123,7 @@ class MazeGUI:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill="black")
                 else:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill="white")
+                    
 
     def visualize_policy(self, policy):
         self.canvas.delete("all")
@@ -144,5 +180,5 @@ def draw_arrow(canvas, x, y, direction, cell_size):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = MazeGUI(root, MAZE_SIZE, OBSTACLE_DENSITY)
+    app = MazeGUI(root, MAZE_SIZE, OBSTACLE_DENSITY, USE_VALUE_ITERATION)
     root.mainloop()
