@@ -57,8 +57,11 @@ class Solver:
         new_values = [0] * len(self.BOARD)
 
         # Value iteration loop
+        iter = 0
         while True:
-            print("Value iteration: ", _, ": ", self.value)
+            print("Value iteration: ", iter, ": ", self.value)
+            iter += 1
+
             delta = 0
             for s in range(1, len(self.BOARD)):
                 # skip obstacles
