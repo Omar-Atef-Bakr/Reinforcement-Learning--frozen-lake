@@ -26,7 +26,7 @@ USE_VALUE_ITERATION = True      # if True value iteration will be use. if False 
 ##############################
 
 
-WINDOW_SIZE = 900
+WINDOW_SIZE = 600
 
 
 class MazeGenerator:
