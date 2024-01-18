@@ -20,7 +20,7 @@ without too many useless iterations in the case of unsolvable cells
 
 ##############################
 # Settings to adjust
-MAZE_SIZE = 70                  # number of rows in the maze
+MAZE_SIZE = 25                  # number of rows in the maze
 OBSTACLE_DENSITY = 0.2          # possibility of every cell being an obstacle
 USE_VALUE_ITERATION = True      # if True value iteration will be use. if False then policy iteration will be used
 ##############################
@@ -47,7 +47,7 @@ class MazeGenerator:
         self.maze[0][0] = 0
         self.maze[self.size - 1][self.size - 1] = 0
 
-        print(self.maze)
+        # print(self.maze)
 
     def get_maze(self):
         return self.maze
@@ -59,6 +59,8 @@ class MazeGUI:
         self.maze_size = maze_size
         self.obstacle_density = obstacle_density
         self.use_value_iteration = use_value_iteration
+        self.value_visualize=[]
+        
 
         self.maze_generator = MazeGenerator(self.maze_size, self.obstacle_density)
 
@@ -69,6 +71,9 @@ class MazeGUI:
         self.canvas.pack()
 
         self.generate_button = tk.Button(root, text="Generate Maze", command=self.generate_maze)
+        self.generate_button.pack()
+
+        self.generate_button = tk.Button(root, text="Visualize value", command=self.visualize_value)
         self.generate_button.pack()
 
         self.maze_size_label = tk.Label(root, text="Maze Size:")
@@ -101,8 +106,6 @@ class MazeGUI:
 
         self.canvas.config(width=self.canvas_size, height=self.canvas_size)
 
-        maze = self.maze_generator.get_maze()
-        self.draw_maze(maze)
         self.canvas.update()
         self.solve_maze()
 
@@ -110,20 +113,26 @@ class MazeGUI:
         self.use_value_iteration = not self.use_value_iteration
         self.use_value_iteration_button.config(text="Toggle Value Iteration (Currently {})".format(
             "On" if self.use_value_iteration else "Off"))
+                    
 
-        
-    def draw_maze(self, maze):
+    def visualize_value(self):
         self.canvas.delete("all")
+        maze = self.maze_generator.get_maze()
         for row in range(len(maze)):
             for col in range(len(maze[row])):
+                if row == col == 0:
+                    continue
+
                 x0, y0 = col * self.cell_size, row * self.cell_size
                 x1, y1 = x0 + self.cell_size, y0 + self.cell_size
 
-                if maze[row][col] == 1:
-                    self.canvas.create_rectangle(x0, y0, x1, y1, fill="black")
-                else:
-                    self.canvas.create_rectangle(x0, y0, x1, y1, fill="white")
-                    
+                ind = row*len(maze)+col
+            
+                value = self.value_visualize[ind]
+    
+                self.canvas.create_rectangle(x0, y0, x1, y1, fill='white', outline="black")
+                self.canvas.create_text((x0 + x1) / 2, (y0 + y1) / 2, text=str(round(value, 2)))
+                
 
     def visualize_policy(self, policy):
         self.canvas.delete("all")
@@ -141,20 +150,21 @@ class MazeGUI:
                 if maze[row][col] == 1:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill="black")
                 else:
+                    self.canvas.create_rectangle(x0, y0, x1, y1, fill="white", outline="black")
                     draw_arrow(self.canvas, (x0 + x1) / 2, (y0 + y1) / 2, policy[ind].lower(), self.cell_size)
 
     def solve_maze(self):
-        print(self.maze_generator.get_maze())
+        # print(self.maze_generator.get_maze())
         ai = Solver(self.maze_generator.get_maze())
 
-        solution = ai.value_iteration() if USE_VALUE_ITERATION else ai.policy_iteration()
-        print(solution)
+        self.value_visualize = ai.value_iteration() if self.use_value_iteration else ai.policy_iteration()
+        # print(solution)
         self.visualize_policy(ai.policy_representation())
 
 
 def draw_arrow(canvas, x, y, direction, cell_size):
-    arrow_length = 15
-    arrow_width = 1
+    arrow_length = cell_size // 3
+    arrow_width = cell_size // 20
 
     if direction == 'l':
         canvas.create_line(x, y, x - arrow_length, y, arrow=tk.LAST, width=arrow_width)
@@ -174,7 +184,6 @@ def draw_arrow(canvas, x, y, direction, cell_size):
                               x, y + arrow_length + arrow_width, fill='black')
 
     elif direction == 's':
-        # canvas.create_oval(x - arrow_length, y - arrow_length, x + arrow_length, y + arrow_length, fill='red')
         canvas.create_rectangle(x - cell_size/2, y - cell_size/2, x + cell_size/2, y + cell_size/2, fill='red')
 
 

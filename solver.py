@@ -14,7 +14,7 @@ class Solver:
     def __init__(self, board):
         # flatten board
         self.BOARD = [cell for row in board for cell in row]
-        print(len(self.BOARD))
+        # print(len(self.BOARD))
         self.size = len(board)
         self.ITERATIONS = int((self.size**2) * (2.5/3))
 
@@ -23,7 +23,6 @@ class Solver:
         self.solvable = [False] * self.size**2
 
         # initialize policy and value functions
-        self.initialize_policy_and_value_functions()
         # print("-" * 50)
         # print("AI initial state:")
         # print("Board: ", self.BOARD)
@@ -59,7 +58,9 @@ class Solver:
         # Value iteration loop
         iter = 0
         while True:
-            print("Value iteration: ", iter, ": ", self.value)
+            if iter%5 == 0:
+                print("Value iteration: ", iter, ": ", self.value)
+                print()
             iter += 1
 
             delta = 0
@@ -97,7 +98,7 @@ class Solver:
         # Policy improvement
         self.policy_improvement()
 
-        return self.policy
+        return self.value
 
     def get_actions(self, s):
 
@@ -188,14 +189,16 @@ class Solver:
 
         # Policy iteration loop
         for i in range(self.ITERATIONS):
-            print(f"Policy Iteration {i}: values={self.value}")
-
+            if i%5 == 0:
+                print(f"Policy Iteration {i}: values={self.value}")
+                print()
             # Policy evaluation
             self.policy_evaluation()
 
             # Policy improvement
             if self.policy_improvement():
                 break
+        return self.value
 
     def policy_evaluation(self):
         new_values = [0] * len(self.BOARD)
