@@ -1,4 +1,5 @@
 import math
+import time
 
 LEFT_INDEX = 0
 UP_INDEX = 1
@@ -57,8 +58,9 @@ class Solver:
 
         # Value iteration loop
         iter = 0
+        start_time = time.time()
         while True:
-            if iter%5 == 0:
+            if iter % 5 == 0:
                 print("Value iteration: ", iter, ": ", self.value)
                 print()
             iter += 1
@@ -97,6 +99,10 @@ class Solver:
 
         # Policy improvement
         self.policy_improvement()
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print("Elapsed time for value iteration: ", elapsed_time, " seconds")
 
         return self.value
 
@@ -188,6 +194,7 @@ class Solver:
         self.initialize_policy_and_value_functions()
 
         # Policy iteration loop
+        start_time = time.time()
         for i in range(self.ITERATIONS):
             if i%5 == 0:
                 print(f"Policy Iteration {i}: values={self.value}")
@@ -198,6 +205,9 @@ class Solver:
             # Policy improvement
             if self.policy_improvement():
                 break
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time for policy iteration: {elapsed_time} seconds")
         return self.value
 
     def policy_evaluation(self):
