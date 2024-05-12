@@ -14,8 +14,8 @@ STUCK_VALUE = -100
 class Solver:
     def __init__(self, board):
         # flatten board
+        print(board)
         self.BOARD = [cell for row in board for cell in row]
-        # print(len(self.BOARD))
         self.size = len(board)
         self.ITERATIONS = int((self.size**2) * (2.5/3))
 
@@ -23,13 +23,14 @@ class Solver:
         self.value = []
         self.solvable = [False] * self.size**2
 
-        # initialize policy and value functions
-        # print("-" * 50)
-        # print("AI initial state:")
-        # print("Board: ", self.BOARD)
-        # print("Policy: ", self.policy)
-        # print("Value: ", self.value)
-        # print("-" * 50)
+    def input_board(self, board):
+        rewards = {}
+        self.size = len(board)
+        for i, row in enumerate(board):
+            for j, cell in enumerate(row):
+                if cell is not None and cell > 0:
+                    rewards[i]
+
 
     def initialize_policy_and_value_functions(self):
         self.policy = []
@@ -268,3 +269,5 @@ class Solver:
                 policy.append(map[index])
 
         return policy
+
+

@@ -26,7 +26,7 @@ USE_VALUE_ITERATION = True      # if True value iteration will be use. if False 
 ##############################
 
 
-WINDOW_SIZE = 600
+WINDOW_SIZE = 500
 
 
 class MazeGenerator:
@@ -47,10 +47,9 @@ class MazeGenerator:
         self.maze[0][0] = 0
         self.maze[self.size - 1][self.size - 1] = 0
 
-        # print(self.maze)
-
     def get_maze(self):
         return self.maze
+
 
 class MazeGUI:
     def __init__(self, root, maze_size, obstacle_density, use_value_iteration):
@@ -59,8 +58,7 @@ class MazeGUI:
         self.maze_size = maze_size
         self.obstacle_density = obstacle_density
         self.use_value_iteration = use_value_iteration
-        self.value_visualize=[]
-        
+        self.value_visualize = []
 
         self.maze_generator = MazeGenerator(self.maze_size, self.obstacle_density)
 
@@ -113,7 +111,6 @@ class MazeGUI:
         self.use_value_iteration = not self.use_value_iteration
         self.use_value_iteration_button.config(text="Toggle Value Iteration (Currently {})".format(
             "On" if self.use_value_iteration else "Off"))
-                    
 
     def visualize_value(self):
         self.canvas.delete("all")
@@ -132,7 +129,6 @@ class MazeGUI:
     
                 self.canvas.create_rectangle(x0, y0, x1, y1, fill='white', outline="black")
                 self.canvas.create_text((x0 + x1) / 2, (y0 + y1) / 2, text=str(round(value, 2)))
-                
 
     def visualize_policy(self, policy):
         self.canvas.delete("all")
@@ -154,11 +150,9 @@ class MazeGUI:
                     draw_arrow(self.canvas, (x0 + x1) / 2, (y0 + y1) / 2, policy[ind].lower(), self.cell_size)
 
     def solve_maze(self):
-        # print(self.maze_generator.get_maze())
         ai = Solver(self.maze_generator.get_maze())
 
         self.value_visualize = ai.value_iteration() if self.use_value_iteration else ai.policy_iteration()
-        # print(solution)
         self.visualize_policy(ai.policy_representation())
 
 

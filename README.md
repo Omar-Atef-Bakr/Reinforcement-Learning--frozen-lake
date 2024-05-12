@@ -20,7 +20,7 @@ This project is a Python application that generates a maze and solves it using e
 
 ## Settings
 
-You can adjust the following settings in `maze.py`:
+You can adjust the following settings in `maze.py` or with the GUI:
 
 - `MAZE_SIZE`: The number of rows in the maze. This also determines the number of columns as the maze is a square.
 - `OBSTACLE_DENSITY`: The possibility of every cell being an obstacle. This is a value between 0 and 1, where 1 means every cell will be an obstacle and 0 means there will be no obstacles.
